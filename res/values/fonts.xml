@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="status_bar_text_size">16dp</dimen>
+	<dimen name="menu_button_text_size">24dp</dimen>
+	<dimen name="dialog_message_text_size">16dp</dimen>
+    <dimen name="dialog_button_text_size">24dp</dimen>
+</resources>

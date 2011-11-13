@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level>
+	<name>Test</name>
+	<difficulty>3</difficulty>
+	<data>
+		<wall
+			x1="0.4"
+			y1="0.0"
+			x2="0.4"
+			y2="0.6" />
+		<wall
+			x1="0.6"
+			y1="0.0"
+			x2="0.6"
+			y2="0.6" />
+		<mirror
+			x="0.5"
+			y="0.9"
+			rot="45.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.25"
+			y="0.75"
+			rot="90.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FF00FF00" />
+		</mirror>
+		<mirror
+			x="0.75"
+			y="0.75"
+			rot="135.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FF00FF00" />
+		</mirror>
+		<target
+			x="0.5"
+			y="0.6"
+			size="15"></target>
+		<target
+			x="0.5"
+			y="0.4"
+			size="15">
+			<requires color="#FF00FF00" />
+		</target>
+		<laser
+			x="0.1"
+			y="0.1"
+			rot="135.0"
+			moveable="false"
+			rotatable="true"
+			color="#FF00FF00" />
+		<laser
+			x="0.9"
+			y="0.1"
+			rot="225.0"
+			moveable="false"
+			rotatable="true"
+			color="#FFAAAAFF" />
+	</data>
+</level>
