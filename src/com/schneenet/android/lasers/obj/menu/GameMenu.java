@@ -2,6 +2,9 @@ package com.schneenet.android.lasers.obj.menu;
 
 import java.util.ArrayList;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +13,8 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.MotionEvent;
+
+import com.schneenet.android.lasers.R;
 
 public class GameMenu {
 
@@ -26,22 +31,21 @@ public class GameMenu {
 
 	public static final int MAX_MENU_ITEMS = 10;
 
-	private static final String[][] MENU_LABELS = { {}, { "New Game", "Level Select", "Options", "Quit" }, {}, { "Resume", "Quit" } };
+	private static final String[][] MENU_LABELS = { {}, { "New Game", "About", "Quit" }, {}, { "Resume", "Quit" } };
 
 	private static final float MENU_PADDING = 10.0f;
-	private static final float MENU_HEIGHT = 50.0f;
 	private static final int HIGHLIGHT_COLOR = 0xFF0000CC;
 
-	public GameMenu(MenuListener l) {
+	public GameMenu(Resources res, MenuListener l) {
 		mListener = l;
 
 		mMenuItems = new ArrayList<MenuItem>();
 		mMenuButtonTextPaint = new Paint();
-		mMenuButtonTextPaint.setTextSize(24.0f);
+		mMenuButtonTextPaint.setTextSize(res.getDimensionPixelSize(R.dimen.menu_button_text_size));
 		mMenuButtonTextPaint.setColor(Color.WHITE);
 		mMenuButtonTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG | Paint.DITHER_FLAG);
 		mMenuButtonTextHighlightPaint = new Paint();
-		mMenuButtonTextHighlightPaint.setTextSize(24.0f);
+		mMenuButtonTextHighlightPaint.setTextSize(res.getDimensionPixelSize(R.dimen.menu_button_text_size));
 		mMenuButtonTextHighlightPaint.setColor(Color.WHITE);
 		mMenuButtonTextHighlightPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG | Paint.DITHER_FLAG);
 		mMenuButtonBackgroundPaint = new Paint();
@@ -61,8 +65,8 @@ public class GameMenu {
 		mMenuButtonBorderHighlightPaint.setStyle(Style.STROKE);
 		mMenuButtonBorderHighlightPaint.setAntiAlias(true);
 
-		// TODO Prepare logo bitmap
-		// For now just a placeholder
+		// Prepare logo bitmap
+		mLogo = BitmapFactory.decodeResource(res, R.drawable.logo);
 
 	}
 
@@ -91,22 +95,29 @@ public class GameMenu {
 		float left = c.getWidth() * 0.2f;
 		float right = c.getWidth() * 0.8f;
 
-		// TODO Draw logo
-		Paint logoPaint = new Paint();
-		logoPaint.setStyle(Style.STROKE);
-		logoPaint.setColor(Color.WHITE);
-		RectF logoRect = new RectF(left, MENU_PADDING, right, MENU_PADDING + 100);
-		c.drawRect(logoRect, logoPaint);
+		// Draw logo
+		float logoCenter = c.getWidth() / 2 - mLogo.getWidth() / 2;
+		c.drawBitmap(mLogo, logoCenter, MENU_PADDING, null);
 
 		// Render menu items
-		float top = logoRect.bottom + MENU_PADDING;
+		float top = MENU_PADDING + mLogo.getHeight() + MENU_PADDING;
 		RectF buttonRect;
+		float menuHeight = 0;
 		int n = mMenuItems.size();
+		for (int i = 0; i < n; i++) {	
+			Rect textBounds = new Rect();
+			mMenuButtonTextPaint.getTextBounds(MENU_LABELS[mGameMenu][i], 0, MENU_LABELS[mGameMenu][i].length(), textBounds);
+			float thisMenuHeight = MENU_PADDING + textBounds.height() + MENU_PADDING;
+			if (thisMenuHeight > menuHeight) menuHeight = thisMenuHeight;
+		}
+		
 		for (int i = 0; i < n; i++) {
+			Rect textBounds = new Rect();
+			mMenuButtonTextPaint.getTextBounds(MENU_LABELS[mGameMenu][i], 0, MENU_LABELS[mGameMenu][i].length(), textBounds);
 			MenuItem curItem = mMenuItems.get(i);
 			buttonRect = curItem.getButtonBounds();
 			if (buttonRect == null) {
-				buttonRect = new RectF(left, top, right, top + MENU_HEIGHT);
+				buttonRect = new RectF(left, top, right, top + menuHeight);
 				curItem.setButtonBounds(buttonRect);
 			}
 
@@ -114,18 +125,12 @@ public class GameMenu {
 			c.drawRoundRect(buttonRect, 5, 5, highlighted ? mMenuButtonBackgroundHighlightPaint : mMenuButtonBackgroundPaint);
 			c.drawRoundRect(buttonRect, 5, 5, highlighted ? mMenuButtonBorderHighlightPaint : mMenuButtonBorderPaint);
 
-			Rect textBounds = new Rect();
-			if (highlighted) {
-				mMenuButtonTextHighlightPaint.getTextBounds(MENU_LABELS[mGameMenu][i], 0, MENU_LABELS[mGameMenu][i].length(), textBounds);
-			} else {
-				mMenuButtonTextPaint.getTextBounds(MENU_LABELS[mGameMenu][i], 0, MENU_LABELS[mGameMenu][i].length(), textBounds);
-			}
-			float textX = (buttonRect.width() - textBounds.width()) / 2 + buttonRect.left;
-			float textY = buttonRect.bottom - (buttonRect.height() - textBounds.height()) / 2;
+			float textX = buttonRect.left + (buttonRect.width() - textBounds.width()) / 2;
+			float textY = buttonRect.top + MENU_PADDING - (highlighted ? mMenuButtonTextHighlightPaint.ascent() : mMenuButtonTextPaint.ascent());
 
 			c.drawText(MENU_LABELS[mGameMenu][i], textX, textY, highlighted ? mMenuButtonTextHighlightPaint : mMenuButtonTextPaint);
 
-			top += (MENU_HEIGHT + MENU_PADDING);
+			top += (menuHeight + MENU_PADDING);
 		}
 
 	}
@@ -181,6 +186,8 @@ public class GameMenu {
 	private Paint mMenuButtonBackgroundHighlightPaint;
 	private Paint mMenuButtonBorderPaint;
 	private Paint mMenuButtonBorderHighlightPaint;
+	
+	private Bitmap mLogo;
 
 	public class MenuItem {
 		private int mMenuId;

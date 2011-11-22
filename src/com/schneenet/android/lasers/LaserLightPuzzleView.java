@@ -39,7 +39,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 		setOnTouchListener(this);
 		selectedIndex = -1;
 		mDragState = DRAG_NONE;
-		mGameMenu = new GameMenu(new GameMenu.MenuListener() {
+		mGameMenu = new GameMenu(getContext().getResources(), new GameMenu.MenuListener() {
 			@Override
 			public void doMenuAction(int menuId, int actionId) {
 				// Handle menu actions
@@ -216,29 +216,34 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	}
 
 	private void doLevelSelect() {
-		// TODO Level select dialog (Use Android OS)
+		mListener.onLevelSelect();
 	}
 
-	private void loadLevel(InputSource is) {
-		// TODO Enable loading animation
+	public void loadLevelAsync(InputSource is) {
+		mListener.setLoadingAnimationVisible(true);
 		LevelFactory.AsyncLevelLoader loader = new LevelFactory.AsyncLevelLoader(is, new LevelFactory.AsyncLevelLoader.AsyncLoaderListener() {
 
 			@Override
 			public void onError(String message, Exception e) {
-				// TODO Handle Async Errors
+				mListener.onError(message, e);
 			}
 
 			@Override
 			public void onLevelLoaded(LaserLightPuzzleLevel level) {
-				currentLevel = level;
-				levelComplete = false;
-				levelCompleteDialogDismissed = false;
-				levelElapsed = 0;
-				// TODO Disable loading animation
-				lastCheckedTime = System.currentTimeMillis();
+				mListener.setLoadingAnimationVisible(false);
+				loadLevel(level);
 			}
 		});
 		loader.execute();
+	}
+
+	public void loadLevel(LaserLightPuzzleLevel level) {
+		currentLevel = level;
+		levelComplete = false;
+		levelCompleteDialogDismissed = false;
+		levelElapsed = 0;
+		mGameMenu.doMenu(GameMenu.GAME_MENU_NONE);
+		lastCheckedTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -251,7 +256,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 			mCompleteDialog.handleTouchEvent(event);
 		} else if (mGameMenu.getGameMenuId() != GameMenu.GAME_MENU_NONE) {
 			mGameMenu.handleTouchEvent(event);
-		} else {
+		} else if (currentLevel != null) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (selectedIndex > -1) {
@@ -313,100 +318,106 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	}
 
 	public void onDraw(Canvas c) {
-		// TODO Scale draw calls to screen size (It is possible that only text
-		// is affected.)
 
 		// Prepare the canvas dimensions if we haven't already.
 		if (cWidth != c.getWidth() && cHeight != c.getHeight())
 			initTranslation(c);
 
-		// Number of game objects
-		int n = currentLevel.getGameObjectCount();
+		boolean menuVisible = mGameMenu != null && mGameMenu.getGameMenuId() != GameMenu.GAME_MENU_NONE;
+		boolean gameDialogVisible = mGameDialog != null;
+		boolean completeDialogVisible = mCompleteDialog != null;
 
-		for (int i = 0; i < n; i++) {
-			if (currentLevel.getGameObject(i) instanceof Targetable) {
-				((Targetable) currentLevel.getGameObject(i)).setLit(false);
-			}
-		}
+		// If a level is loaded
+		if (currentLevel != null) {
 
-		// Draw lasers!
-		for (int i = 0; i < n; i++) {
-			GameObjectRenderable thisObj = currentLevel.getGameObject(i);
-			if (thisObj instanceof LightSource) {
-				// We are a laser and we need to find our path
-				LightSource ls = (LightSource) thisObj;
-				float deg = clampRotationDegrees(ls.getRotation());
-				Paint laserPaint = new Paint();
-				laserPaint.setColor(ls.getLaserColor());
-				laserPaint.setStrokeWidth(mAnimState % 2 == 0 ? 2 : 3);
-				laserPaint.setAntiAlias(true);
-				recursiveLightDraw(c, 0, thisObj.getCanvasPointF(), deg, laserPaint);
-			}
-		}
+			// Number of game objects
+			int n = currentLevel.getGameObjectCount();
 
-		// Draw game objects and check for win condition
-		boolean objective = true;
-		int lit = 0;
-		int targets = 0;
-		for (int i = 0; i < n; i++) {
-			currentLevel.getGameObject(i).draw(c);
-			if (mGameMenu.getGameMenuId() == GameMenu.GAME_MENU_NONE) {
-				// Check for win condition
-				if (currentLevel.getGameObject(i) instanceof LightTarget) {
-					targets++;
-					if (!((LightTarget) currentLevel.getGameObject(i)).isLit()) {
-						objective = false;
-					} else {
-						lit++;
-					}
+			for (int i = 0; i < n; i++) {
+				if (currentLevel.getGameObject(i) instanceof Targetable) {
+					((Targetable) currentLevel.getGameObject(i)).setLit(false);
 				}
-			} else {
-				objective = false;
 			}
-		}
-		if (objective) {
-			levelComplete = true;
+
+			// Draw lasers!
+			for (int i = 0; i < n; i++) {
+				GameObjectRenderable thisObj = currentLevel.getGameObject(i);
+				if (thisObj instanceof LightSource) {
+					// We are a laser and we need to find our path
+					LightSource ls = (LightSource) thisObj;
+					float deg = clampRotationDegrees(ls.getRotation());
+					Paint laserPaint = new Paint();
+					laserPaint.setColor(ls.getLaserColor());
+					laserPaint.setStrokeWidth(mAnimState % 2 == 0 ? 2 : 3);
+					laserPaint.setAntiAlias(true);
+					recursiveLightDraw(c, 0, thisObj.getCanvasPointF(), deg, laserPaint);
+				}
+			}
+
+			// Draw game objects and check for win condition
+			boolean objective = true;
+			int lit = 0;
+			int targets = 0;
+			for (int i = 0; i < n; i++) {
+				currentLevel.getGameObject(i).draw(c);
+				if (mGameMenu.getGameMenuId() == GameMenu.GAME_MENU_NONE) {
+					// Check for win condition
+					if (currentLevel.getGameObject(i) instanceof LightTarget) {
+						targets++;
+						if (!((LightTarget) currentLevel.getGameObject(i)).isLit()) {
+							objective = false;
+						} else {
+							lit++;
+						}
+					}
+				} else {
+					objective = false;
+				}
+			}
+			if (objective) {
+				levelComplete = true;
+			}
+
+			if (!menuVisible && !gameDialogVisible && !completeDialogVisible) {
+
+				// Draw selected halo
+				if (selectedIndex > -1) {
+					GameObjectRenderable selectedObj = currentLevel.getGameObject(selectedIndex);
+					PointF cP = selectedObj.getCanvasPointF();
+
+					// Move zone
+					Paint p1 = new Paint();
+					p1.setColor(selectedObj.isMoveable() ? 0x9900FF00 : 0x99FF0000);
+					p1.setAntiAlias(true);
+					c.drawCircle(cP.x, cP.y, mTouchRegionMoveRadius, p1);
+
+					// Rotation halo zone
+					Paint p2 = new Paint();
+					p2.setColor(selectedObj.isRotatable() ? 0x9900FF00 : 0x99FF0000);
+					p2.setStrokeWidth(mTouchRegionRotateRadiusMax - mTouchRegionRotateRadiusMin);
+					p2.setStyle(Style.STROKE);
+					p2.setAntiAlias(true);
+					c.drawCircle(cP.x, cP.y, mTouchRegionRotateRadiusMin + (mTouchRegionRotateRadiusMax - mTouchRegionRotateRadiusMin) / 2, p2);
+				}
+
+				// Draw status bar
+				float statusBarTextY = c.getHeight() - STATUS_BAR_PADDING - mStatusBarTextPaint.descent();
+				c.drawRect(0, c.getHeight() - statusBarHeight, c.getWidth(), c.getHeight(), mStatusBarPaint);
+				c.drawText(DateUtils.formatElapsedTime(levelElapsed / 1000l), STATUS_BAR_PADDING, statusBarTextY, mStatusBarTextPaint);
+				String targetsInfo = String.format("%d of %d targets lit.", lit, targets);
+				float targetsStrX = c.getWidth() - (STATUS_BAR_PADDING + mStatusBarTextPaint.measureText(targetsInfo));
+				c.drawText(targetsInfo, targetsStrX, statusBarTextY, mStatusBarTextPaint);
+			}
+
 		}
 
-		// Are we actually playing?
-		if (mGameMenu.getGameMenuId() != GameMenu.GAME_MENU_NONE) {
+		if (menuVisible) {
 			mGameMenu.draw(c);
-		} else if (mGameDialog == null && mCompleteDialog == null) { // We are
-																		// playing
-
-			// Draw selected halo
-			if (selectedIndex > -1) {
-				GameObjectRenderable selectedObj = currentLevel.getGameObject(selectedIndex);
-				PointF cP = selectedObj.getCanvasPointF();
-
-				// Move zone
-				Paint p1 = new Paint();
-				p1.setColor(selectedObj.isMoveable() ? 0x9900FF00 : 0x99FF0000);
-				p1.setAntiAlias(true);
-				c.drawCircle(cP.x, cP.y, TOUCH_REGION_MOVE, p1);
-
-				// Rotation halo zone
-				Paint p2 = new Paint();
-				p2.setColor(selectedObj.isRotatable() ? 0x9900FF00 : 0x99FF0000);
-				p2.setStrokeWidth(TOUCH_REGION_ROTATE_MAX - TOUCH_REGION_ROTATE_MIN);
-				p2.setStyle(Style.STROKE);
-				p2.setAntiAlias(true);
-				c.drawCircle(cP.x, cP.y, TOUCH_REGION_ROTATE_MIN + (TOUCH_REGION_ROTATE_MAX - TOUCH_REGION_ROTATE_MIN) / 2, p2);
-			}
-
-			// Draw status bar
-			c.drawRect(0, c.getHeight() - statusBarHeight, c.getWidth(), c.getHeight(), mStatusBarPaint);
-			c.drawText(DateUtils.formatElapsedTime(levelElapsed / 1000l), STATUS_BAR_PADDING, c.getHeight() - STATUS_BAR_PADDING, mStatusBarTextPaint);
-			String targetsInfo = String.format("%d of %d targets lit.", lit, targets);
-			float targetsStrX = c.getWidth() - (STATUS_BAR_PADDING + mStatusBarTextPaint.measureText(targetsInfo));
-			float targetsStrY = c.getHeight() - STATUS_BAR_PADDING;
-			c.drawText(targetsInfo, targetsStrX, targetsStrY, mStatusBarTextPaint);
-
 		}
 
-		if (mGameDialog != null) {
+		if (gameDialogVisible) {
 			mGameDialog.draw(c);
-		} else if (mCompleteDialog != null) {
+		} else if (completeDialogVisible) {
 			mCompleteDialog.draw(c);
 		}
 	}
@@ -541,9 +552,9 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 
 	private int getTouchRegion(float cX, float cY, float eX, float eY) {
 		float d = findDistance(new PointF(cX, cY), new PointF(eX, eY));
-		if (d < TOUCH_REGION_MOVE) {
+		if (d < mTouchRegionMoveRadius) {
 			return DRAG_MOVE;
-		} else if (d >= TOUCH_REGION_ROTATE_MIN && d < TOUCH_REGION_ROTATE_MAX) {
+		} else if (d >= mTouchRegionRotateRadiusMin && d < mTouchRegionRotateRadiusMax) {
 			return DRAG_ROTATE;
 		} else {
 			return DRAG_NONE;
@@ -601,16 +612,21 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	private static final int ANIM_STATE_MAX = 20;
 
 	private static final int MAX_RECURSE_LEVEL = 10;
-	
-	private static final int TOUCH_REGION_MOVE = 25;
-	private static final int TOUCH_REGION_ROTATE_MIN = 40;
-	private static final int TOUCH_REGION_ROTATE_MAX = 80;
+
+	private int mTouchRegionMoveRadius = 25;
+	private int mTouchRegionRotateRadiusMin = 40;
+	private int mTouchRegionRotateRadiusMax = 80;
 
 	private static final float STATUS_BAR_PADDING = 10.0f;
 
 	public interface GameListener {
+		public void setLoadingAnimationVisible(boolean show);
+
 		public void onLevelSelect();
+
 		public void onQuit();
+		
+		public void onError(String msg, Exception ex);
 	}
 
 }

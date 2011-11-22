@@ -2,6 +2,7 @@
 <level>
 	<name>Test</name>
 	<difficulty>3</difficulty>
+	<author>Matt Schneeberger</author>
 	<data>
 		<wall
 			x1="0.4"
@@ -12,7 +13,7 @@
 			x1="0.6"
 			y1="0.0"
 			x2="0.6"
-			y2="0.6" />
+			y2="0.5" />
 		<mirror
 			x="0.5"
 			y="0.9"

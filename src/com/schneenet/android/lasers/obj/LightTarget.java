@@ -61,7 +61,7 @@ public class LightTarget extends GameObjectRenderable implements Targetable {
 
 	@Override
 	public void draw(Canvas c) {
-		// TODO Textures?
+		// Textures?
 		PointF cP = getCanvasPointF();
 		c.drawCircle(cP.x, cP.y, mTargetRadius, mPaint);
 		mPaintReq.setColor(mRequiredColor);

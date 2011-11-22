@@ -18,21 +18,22 @@ public class LaserLightPuzzleLevel {
 		final GameObjectRenderable obj = gameObjects.get(i);
 		return obj;
 	}
-
+	
 	public String getName() {
-		return name;
+		return mName;
 	}
 	
 	public String getAuthor() {
-		return author;
+		return mAuthor;
 	}
-
+	
 	public int getDifficulty() {
-		return difficulty;
+		return mDifficulty;
 	}
-
+	
+	String mName;
+	String mAuthor;
+	int mDifficulty;
 	ArrayList<GameObjectRenderable> gameObjects;
-	String name;
-	String author;
-	int difficulty;
+
 }

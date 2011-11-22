@@ -16,6 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.schneenet.android.lasers.obj.GameObjectRenderable;
 import com.schneenet.android.lasers.obj.LightSource;
@@ -43,7 +44,6 @@ public class LevelFactory {
 					publishProgress(-1);
 				}
 			});
-			
 			return parser.loadLevel(mInputSource);
 		}
 		
@@ -90,9 +90,12 @@ public class LevelFactory {
 				return theLevel;
 			} catch (SAXException e) {
 				mListener.onError(e.getLocalizedMessage(), e);
+				Log.e("LevelParser", e.getLocalizedMessage(), e);
 			} catch (IOException e) {
+				Log.e("LevelParser", e.getLocalizedMessage(), e);
 				mListener.onError(e.getLocalizedMessage(), e);
 			} catch (ParserConfigurationException e) {
+				Log.e("LevelParser", e.getLocalizedMessage(), e);
 				mListener.onError(e.getLocalizedMessage(), e);
 			}
 			return null;
@@ -122,14 +125,14 @@ public class LevelFactory {
 						inLevel = false;
 					} else if (TAG_NAME.equals(qName)) {
 						// Finished with name
-						theLevel.name = charsBuilder.toString().trim();
+						theLevel.mName = charsBuilder.toString().trim();
 						charsBuilder = new StringBuilder();
 					} else if (TAG_AUTHOR.equals(qName)) {
-						theLevel.author = charsBuilder.toString().trim();
+						theLevel.mAuthor = charsBuilder.toString().trim();
 						charsBuilder = new StringBuilder();
 					} else if (TAG_DIFFICULTY.equals(qName)) {
 						// Finished with difficulty
-						theLevel.difficulty = Integer.parseInt(charsBuilder.toString().trim());
+						theLevel.mDifficulty = Integer.parseInt(charsBuilder.toString().trim());
 						charsBuilder = new StringBuilder();
 					} else if (Data.TAG_LIGHTSOURCE.equals(qName) || Data.TAG_LIGHTTARGET.equals(qName) || Data.TAG_MIRROR.equals(qName) || Data.TAG_WALL.equals(qName)) {
 						if (curObject != null) {
@@ -159,7 +162,7 @@ public class LevelFactory {
 				} else {
 					throw new SAXException("Parse Error: Only one \"level\" tag allowed per level file!");
 				}
-			} else if (TAG_NAME.equals(qName) || TAG_DIFFICULTY.equals(qName) || TAG_DATA.equals(qName)) {
+			} else if (TAG_NAME.equals(qName) || TAG_DIFFICULTY.equals(qName) || TAG_AUTHOR.equals(qName) || TAG_DATA.equals(qName)) {
 				// Don't care here
 			} else if (Data.TAG_LIGHTSOURCE.equals(qName)) {
 				if (as.getIndex("x") != -1 && as.getIndex("y") != -1 && as.getIndex("rot") != -1 && as.getIndex("color") != -1) {
