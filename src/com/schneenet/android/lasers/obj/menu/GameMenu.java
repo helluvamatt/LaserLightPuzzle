@@ -31,7 +31,7 @@ public class GameMenu {
 
 	public static final int MAX_MENU_ITEMS = 10;
 
-	private static final String[][] MENU_LABELS = { {}, { "New Game", "About", "Quit" }, {}, { "Resume", "Quit" } };
+	private static final String[][] MENU_LABELS = { {}, { "New Game", "About", "Quit" }, { "Resume", "Quit" } };
 
 	private static final float MENU_PADDING = 10.0f;
 	private static final int HIGHLIGHT_COLOR = 0xFF0000CC;

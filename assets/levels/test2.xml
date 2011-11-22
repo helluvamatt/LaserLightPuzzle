@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level>
+	<name>Z Paul</name>
+	<difficulty>3</difficulty>
+	<author>Paul Ferguson</author>
+	<data>
+		<wall
+			x1="0.0"
+			y1="0.3"
+			x2="0.4"
+			y2="0.3" />
+		<wall
+			x1="0.6"
+			y1="0.7"
+			x2="1.0"
+			y2="0.7" />
+		<mirror
+			x="0.8"
+			y="0.15"
+			rot="20.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.15"
+			y="0.8"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<target
+			x="0.15"
+			y="0.15"
+			size="15">
+			<requires color="#FFAAAAFF" />
+		</target>
+		<laser
+			x="0.9"
+			y="0.9"
+			rot="225.0"
+			moveable="false"
+			rotatable="true"
+			color="#FFAAAAFF" />
+	</data>
+</level>

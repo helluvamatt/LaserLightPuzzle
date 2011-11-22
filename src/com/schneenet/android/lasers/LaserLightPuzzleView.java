@@ -614,8 +614,8 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	private static final int MAX_RECURSE_LEVEL = 10;
 
 	private int mTouchRegionMoveRadius = 25;
-	private int mTouchRegionRotateRadiusMin = 40;
-	private int mTouchRegionRotateRadiusMax = 80;
+	private int mTouchRegionRotateRadiusMin = 80;
+	private int mTouchRegionRotateRadiusMax = 120;
 
 	private static final float STATUS_BAR_PADDING = 10.0f;
 

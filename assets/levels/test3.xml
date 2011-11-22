@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level>
-	<name>ZOMG Lazers</name>
+	<name>ZigZag</name>
 	<difficulty>3</difficulty>
-	<author>Matt Schneeberger</author>
+	<author>Paul Ferguson</author>
 	<data>
 		<wall
-			x1="0.4"
-			y1="0.0"
+			x1="0.0"
+			y1="0.8"
 			x2="0.4"
-			y2="0.6" />
+			y2="0.8" />
 		<wall
-			x1="0.6"
+			x1="0.8"
+			y1="0.8"
+			x2="0.8"
+			y2="1.0" />
+		<wall
+			x1="0.2"
 			y1="0.0"
-			x2="0.6"
-			y2="0.5" />
+			x2="0.2"
+			y2="0.6" />
 		<mirror
-			x="0.5"
-			y="0.9"
+			x="0.8"
+			y="0.2"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.3"
+			y="0.3"
+			rot="90.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.7"
+			y="0.8"
 			rot="45.0"
 			moveable="false"
 			rotatable="true"
@@ -24,43 +47,36 @@
 			<requires color="#FFAAAAFF" />
 		</mirror>
 		<mirror
-			x="0.25"
-			y="0.75"
+			x="0.15"
+			y="0.7"
 			rot="90.0"
 			moveable="false"
 			rotatable="true"
 			size="50">
 			<requires color="#FF00FF00" />
 		</mirror>
-		<mirror
-			x="0.75"
-			y="0.75"
-			rot="135.0"
-			moveable="false"
-			rotatable="true"
-			size="50">
-			<requires color="#FF00FF00" />
-		</mirror>
 		<target
-			x="0.5"
-			y="0.6"
-			size="15"></target>
-		<target
-			x="0.5"
-			y="0.4"
+			x="0.1"
+			y="0.1"
 			size="15">
 			<requires color="#FF00FF00" />
 		</target>
-		<laser
+		<target
 			x="0.1"
-			y="0.1"
+			y="0.9"
+			size="15">
+			<requires color="#FFAAAAFF" />
+		</target>
+		<laser
+			x="0.7"
+			y="0.3"
 			rot="135.0"
 			moveable="false"
 			rotatable="true"
 			color="#FF00FF00" />
 		<laser
 			x="0.9"
-			y="0.1"
+			y="0.9"
 			rot="225.0"
 			moveable="false"
 			rotatable="true"
