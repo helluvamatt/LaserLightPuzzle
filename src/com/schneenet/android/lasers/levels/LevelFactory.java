@@ -181,7 +181,8 @@ public class LevelFactory {
 					float x = Float.parseFloat(as.getValue("x"));
 					float y = Float.parseFloat(as.getValue("y"));
 					float size = Float.parseFloat(as.getValue("size"));
-					curObject = new LightTarget(x, y, size);
+					boolean transparent = Boolean.parseBoolean(as.getValue("transparent"));
+					curObject = new LightTarget(x, y, size, transparent);
 				} else {
 					throw new SAXException("Parse Error: Required attributes missing for tag \"" + qName + "\".");
 				}

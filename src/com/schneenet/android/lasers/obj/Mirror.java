@@ -50,6 +50,13 @@ public class Mirror extends GameObjectRenderable implements Targetable {
 		mPaint.setColor(mRequiresColor ? mRequiredColor : Color.WHITE);
 		c.drawLine(mPrimaryEndpoint.x, mPrimaryEndpoint.y, mSecondaryEndpoint.x, mSecondaryEndpoint.y, mPaint);
 	}
+	
+	public Mirror clone() {
+		Mirror clone = new Mirror(cX, cY, mMoveable, mRotatable, rotation, mMirrorLength);
+		clone.mRequiresColor = this.mRequiresColor;
+		clone.mRequiredColor = this.mRequiredColor;
+		return clone;
+	}
 
 	public PointF getTargetPointPrimary(float srcAngle) {
 		// srcAngle is ignored

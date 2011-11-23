@@ -5,7 +5,7 @@ import android.graphics.PointF;
 
 import com.schneenet.android.lasers.LaserLightPuzzleView;
 
-public abstract class GameObjectRenderable {
+public abstract class GameObjectRenderable implements Cloneable {
 	public GameObjectRenderable(float x, float y) {
 		cX = x;
 		cY = y;
@@ -43,6 +43,8 @@ public abstract class GameObjectRenderable {
 	public abstract boolean isRotatable();
 
 	public abstract void draw(Canvas c);
+	
+	public abstract GameObjectRenderable clone();
 	
 	public final PointF getCanvasPointF() {
 		return LaserLightPuzzleView.translateCoordinatePointToCanvas(cX, cY);

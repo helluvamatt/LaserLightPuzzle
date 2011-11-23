@@ -99,6 +99,20 @@ public class LaserLightPuzzleActivity extends Activity implements LaserLightPuzz
 		});
 		builder.show();
 	}
+	
+	@Override
+	public void onAbout() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.about_dialog_title);
+		builder.setMessage(R.string.about_dialog_text); // TODO About message resource
+		builder.setNeutralButton(R.string.about_dialog_dismiss_button_text, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.show();
+	}
 
 	@Override
 	public void setLoadingAnimationVisible(boolean show) {

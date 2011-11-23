@@ -7,7 +7,7 @@ import android.graphics.PointF;
 
 public class LightTarget extends GameObjectRenderable implements Targetable {
 	
-	public LightTarget(float x, float y, float targetRadius) {
+	public LightTarget(float x, float y, float targetRadius, boolean transparent) {
 		super(x, y);
 		mPaint = new Paint();
 		mPaint.setColor(Color.GRAY);
@@ -17,6 +17,7 @@ public class LightTarget extends GameObjectRenderable implements Targetable {
 		mPaintReq = new Paint();
 		mPaintReq.setAntiAlias(true);
 		mTargetRadius = targetRadius;
+		mTransparent = transparent;
 		mLit = false;
 	}
 	
@@ -40,10 +41,9 @@ public class LightTarget extends GameObjectRenderable implements Targetable {
 		return mLit;
 	}
 	
-	private PointF getPointOnCircle(float deg) {
-		PointF cP = getCanvasPointF();
-		float offsetX = (float) Math.sin(Math.toRadians(deg)) * mTargetRadius;
-		float offsetY = (float) Math.cos(Math.toRadians(deg)) * mTargetRadius;
+	public static PointF getPointOnCircle(float deg, float r, PointF cP) {
+		float offsetX = (float) Math.sin(Math.toRadians(deg)) * r;
+		float offsetY = (float) Math.cos(Math.toRadians(deg)) * r;
 		return new PointF(cP.x + offsetX, cP.y - offsetY);
 	}
 
@@ -71,33 +71,41 @@ public class LightTarget extends GameObjectRenderable implements Targetable {
 		c.drawCircle(cP.x, cP.y, mTargetRadius - 8, mPaintInd);
 	}
 	
+	public LightTarget clone() {
+		LightTarget clone = new LightTarget(cX, cY, mTargetRadius, mTransparent);
+		clone.mRequiresColor = this.mRequiresColor;
+		clone.mRequiredColor = this.mRequiredColor;
+		return clone;
+	}
+	
 	private Paint mPaint;
 	private Paint mPaintInd;
 	private Paint mPaintReq;
 	private float mTargetRadius;
 	private boolean mLit;
+	private boolean mTransparent;
 	
 	private boolean mRequiresColor = false;
 	private int mRequiredColor = 0;
 
 	@Override
 	public PointF getTargetPointPrimary(float srcAngle) {
-		return getPointOnCircle(srcAngle + 90);
+		return getPointOnCircle(srcAngle + 90, mTargetRadius, getCanvasPointF());
 	}
 	
 	@Override
 	public boolean isReflecting(int color) {
-		return false;
+		return mTransparent && (!mRequiresColor || mRequiredColor == color);
 	}
 	
 	@Override
 	public float getReflectionAngle(float srcAngle) {
-		return 0;
+		return srcAngle;
 	}
 
 	@Override
 	public PointF getTargetPointSecondary(float srcAngle) {
-		return getPointOnCircle(srcAngle - 90);
+		return getPointOnCircle(srcAngle - 90, mTargetRadius, getCanvasPointF());
 	}
 	
 	@Override

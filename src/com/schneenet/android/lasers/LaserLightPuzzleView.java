@@ -50,7 +50,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 						doLevelSelect();
 						break;
 					case GameMenu.GAME_MENU_MAIN_ACTION_ABOUT:
-						// TODO Do about section
+						mListener.onAbout();
 						break;
 					case GameMenu.GAME_MENU_MAIN_ACTION_QUIT:
 						mGameDialog = new GameDialog(getContext().getResources(), "Are you sure you want to quit?", "Yes", "No", new GameDialog.GameDialogListener() {
@@ -238,7 +238,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	}
 
 	public void loadLevel(LaserLightPuzzleLevel level) {
-		currentLevel = level;
+		currentLevel = level.clone();
 		levelComplete = false;
 		levelCompleteDialogDismissed = false;
 		levelElapsed = 0;
@@ -623,6 +623,8 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 		public void setLoadingAnimationVisible(boolean show);
 
 		public void onLevelSelect();
+		
+		public void onAbout();
 
 		public void onQuit();
 		

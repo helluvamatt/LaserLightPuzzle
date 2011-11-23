@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-public class LightSource extends GameObjectRenderable {
+public class LightSource extends GameObjectRenderable implements Targetable {
 
 	public LightSource(float x, float y, boolean moveable, boolean rotatable, float initialRotation, int laserColor) {
 		super(x, y);
@@ -54,6 +54,10 @@ public class LightSource extends GameObjectRenderable {
 		c.restore();
 	}
 	
+	public LightSource clone() {
+		return new LightSource(cX, cY, mMoveable, mRotatable, rotation, mLaserColor);
+	}
+	
 	public int getLaserColor() {
 		return mLaserColor;
 	}
@@ -68,5 +72,44 @@ public class LightSource extends GameObjectRenderable {
 	public static final int LASER_COLOR_INFRARED = 0x22FF0000;
 	public static final int LASER_COLOR_GREEN = 0xFF00FF00;
 	public static final int LASER_COLOR_ULTRAVIOLET = 0xFFAAAAFF;
+	@Override
+	public PointF getTargetPointPrimary(float srcAngle) {
+		return LightTarget.getPointOnCircle(srcAngle + 90, 25, getCanvasPointF());
+	}
+
+	@Override
+	public PointF getTargetPointSecondary(float srcAngle) {
+		return LightTarget.getPointOnCircle(srcAngle - 90, 25, getCanvasPointF());
+	}
+
+	@Override
+	public boolean isReflecting(int color) {
+		return false;
+	}
+
+	@Override
+	public float getReflectionAngle(float srcAngle) {
+		return srcAngle;
+	}
+
+	@Override
+	public void setLit(boolean lit) {
+		// Don't care
+	}
+
+	@Override
+	public void setRequiresColor(boolean requires, int color) {
+		// Don't care
+	}
+
+	@Override
+	public boolean getRequiresColor() {
+		return false;
+	}
+
+	@Override
+	public int getRequiredColor() {
+		return 0;
+	}
 
 }

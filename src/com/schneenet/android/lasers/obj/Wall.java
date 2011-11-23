@@ -87,6 +87,10 @@ public class Wall extends GameObjectRenderable implements Targetable {
 		c.drawLine(getStartPoint().x, getStartPoint().y, getEndPoint().x, getEndPoint().y, mWallPaint);
 	}
 	
+	public Wall clone() {
+		return new Wall(mStartPt, mEndPt);
+	}
+	
 	private PointF mStartPt;
 	private PointF mEndPt;
 	private Paint mWallPaint;
