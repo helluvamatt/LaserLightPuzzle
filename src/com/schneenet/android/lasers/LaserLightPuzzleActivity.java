@@ -7,13 +7,17 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.schneenet.android.lasers.levels.AsyncMultiLevelLoader;
 import com.schneenet.android.lasers.levels.LaserLightPuzzleLevel;
 import com.schneenet.android.lasers.levels.LevelAdapter;
+import com.schneenet.android.lasers.levels.LevelLoader;
 
 public class LaserLightPuzzleActivity extends Activity implements LaserLightPuzzleView.GameListener {
 	/** Called when the activity is first created. */
@@ -30,11 +34,12 @@ public class LaserLightPuzzleActivity extends Activity implements LaserLightPuzz
 		mLoadingDialog = new ProgressDialog(this);
 		mLoadingDialog.setCancelable(false);
 		mLoadingDialog.setTitle(R.string.loading);
+		mLoadingDialog.setMessage(getResources().getText(R.string.loading));
 		mLoadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mLoadingDialog.setIndeterminate(true);
 
 		mLevelAdapter = new LevelAdapter(this);
-		AsyncMultiLevelLoader loader = new AsyncMultiLevelLoader(this, new AsyncMultiLevelLoader.MultiLevelLoaderListener() {
+		LevelLoader loader = new LevelLoader(this, new LevelLoader.MultiLevelLoaderListener() {
 			@Override
 			public void onProgress(boolean indeterminate, int progress, int maxProgress) {
 				// Don't care
@@ -46,6 +51,7 @@ public class LaserLightPuzzleActivity extends Activity implements LaserLightPuzz
 				for (int i = 0; i < n; i++) {
 					mLevelAdapter.add(levels.get(i));
 				}
+				mLevelAdapter.notifyDataSetChanged();
 				setLoadingAnimationVisible(false);
 			}
 
@@ -128,6 +134,29 @@ public class LaserLightPuzzleActivity extends Activity implements LaserLightPuzz
 	public void onError(String msg, Exception ex) {
 		Toast.makeText(LaserLightPuzzleActivity.this, "Error: " + msg, Toast.LENGTH_LONG).show();
 		Log.e("LaserLightPuzzle", "onError(): " + msg, ex);
+	}
+
+	@Override
+	public void onLevelComplete(long time, boolean gotHighScore) {
+		if (gotHighScore) {
+			mLevelAdapter.notifyDataSetChanged();
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.level_complete_dialog_title);
+		View v = getLayoutInflater().inflate(R.layout.level_complete_dialog, (ViewGroup) findViewById(R.id.level_complete_dialog_layout_root));
+		((TextView) v.findViewById(R.id.level_complete_dialog_message)).setText(gotHighScore ? R.string.level_complete_dialog_message_highscore : R.string.level_complete_dialog_message_normal);
+		((TextView) v.findViewById(R.id.level_complete_dialog_time)).setText(getResources().getString(R.string.level_complete_dialog_yourtime) + " " + DateUtils.formatElapsedTime(time / 1000l));
+		builder.setView(v);
+		DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				puzzleView.levelCompleteDialogDismissed(which);
+				dialog.dismiss();
+			}
+		};
+		builder.setPositiveButton(R.string.level_complete_dialog_button1_text, clickListener);
+		builder.setNegativeButton(R.string.level_complete_dialog_button2_text, clickListener);
+		builder.show();
 	}
 
 }

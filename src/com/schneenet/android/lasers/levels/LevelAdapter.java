@@ -3,12 +3,12 @@ package com.schneenet.android.lasers.levels;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.schneenet.android.lasers.R;
@@ -47,15 +47,11 @@ public class LevelAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup viewGroup) {
-		// Re-use old view
-		if (convertView != null && convertView instanceof LinearLayout) {
-			return convertView;
-		}
-		
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View v = inflater.inflate(R.layout.level_list_item, viewGroup, false);
-		
 		LaserLightPuzzleLevel level = get(position);
+		long time = level.getHighScore(mContext);
+		((TextView) v.findViewById(R.id.level_list_item_highscore)).setText(time < 0 ? "" : mContext.getResources().getString(R.string.high_score_label) + " " + DateUtils.formatElapsedTime(time / 1000l));
 		((TextView) v.findViewById(R.id.level_list_item_name)).setText(level.getName());
 		((TextView) v.findViewById(R.id.level_list_item_author)).setText(level.getAuthor());
 		int res;

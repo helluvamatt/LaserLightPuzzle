@@ -9,9 +9,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class AsyncMultiLevelLoader extends AsyncTask<Void, Integer, ArrayList<LaserLightPuzzleLevel>> {
+public class LevelLoader extends AsyncTask<Void, Integer, ArrayList<LaserLightPuzzleLevel>> {
 
-	public AsyncMultiLevelLoader(Context ctxt, MultiLevelLoaderListener l) {
+	public LevelLoader(Context ctxt, MultiLevelLoaderListener l) {
 		mContext = ctxt;
 		mListener = l;
 	}
@@ -21,7 +21,7 @@ public class AsyncMultiLevelLoader extends AsyncTask<Void, Integer, ArrayList<La
 		ArrayList<LaserLightPuzzleLevel> levels = new ArrayList<LaserLightPuzzleLevel>();
 		try {
 			publishProgress(0);
-			LevelFactory.LevelParser parser = new LevelFactory.LevelParser(new LevelFactory.LevelParser.ParserListener() {
+			LevelParser parser = new LevelParser(new LevelParser.ParserListener() {
 				@Override
 				public void onError(String msg, Exception e) {
 					errMessage = msg;
@@ -35,7 +35,7 @@ public class AsyncMultiLevelLoader extends AsyncTask<Void, Integer, ArrayList<La
 				publishProgress(i, n);
 				if (levelFiles[i].endsWith(".xml")) {
 					InputSource is = new InputSource(mContext.getAssets().open("levels/" + levelFiles[i]));
-					levels.add(parser.loadLevel(is));
+					levels.add(parser.loadLevel(is, levelFiles[i]));
 				} else {
 					Log.e("AsyncMultiLevelLoader", "Not an XML file: " + levelFiles[i]);
 				}

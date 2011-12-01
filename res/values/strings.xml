@@ -6,4 +6,11 @@
     <string name="about_dialog_title">About...</string>
     <string name="about_dialog_dismiss_button_text">Close</string>
     <string name="about_dialog_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis congue accumsan iaculis. Phasellus hendrerit posuere lectus quis iaculis. Praesent lacinia fringilla dignissim. Maecenas scelerisque nunc quis enim suscipit adipiscing. Maecenas dui ligula, fermentum ut tincidunt et, gravida a orci. Suspendisse fermentum ligula volutpat turpis imperdiet ut malesuada turpis condimentum. Morbi fermentum ultrices tellus ac volutpat. Proin pretium posuere erat ac congue. Etiam laoreet massa ac ante suscipit ac ultricies quam rhoncus. Nullam porta nisl dignissim est eleifend mattis.</string>
+    <string name="level_complete_dialog_title">Level Complete</string>
+    <string name="level_complete_dialog_message_normal">Level complete!</string>
+    <string name="level_complete_dialog_message_highscore">Level complete! New best time!</string>
+    <string name="level_complete_dialog_yourtime">Your Time: </string>
+    <string name="level_complete_dialog_button1_text">Play Again</string>
+    <string name="level_complete_dialog_button2_text">Main Menu</string>
+    <string name="high_score_label">Best Time: </string>
 </resources>

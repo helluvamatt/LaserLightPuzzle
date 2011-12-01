@@ -1,27 +1,25 @@
 package com.schneenet.android.lasers;
 
-import org.xml.sax.InputSource;
-
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PointF;
+import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.schneenet.android.lasers.levels.LaserLightPuzzleLevel;
-import com.schneenet.android.lasers.levels.LevelFactory;
 import com.schneenet.android.lasers.obj.GameObjectRenderable;
 import com.schneenet.android.lasers.obj.LightSource;
 import com.schneenet.android.lasers.obj.LightTarget;
 import com.schneenet.android.lasers.obj.Targetable;
 import com.schneenet.android.lasers.obj.menu.GameDialog;
 import com.schneenet.android.lasers.obj.menu.GameMenu;
-import com.schneenet.android.lasers.obj.menu.LevelCompleteDialog;
 
 public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 
@@ -107,24 +105,15 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 				}
 
 				// What happens when YOU complete a level
-				if (levelComplete && !levelCompleteDialogDismissed && mGameDialog == null && mGameMenu.getGameMenuId() == GameMenu.GAME_MENU_NONE && mCompleteDialog == null) {
-					mCompleteDialog = new LevelCompleteDialog(getContext().getResources(), levelElapsed, new LevelCompleteDialog.LevelCompleteDialogListener() {
-						@Override
-						public void onButtonClicked(int which) {
-							switch (which) {
-							case LevelCompleteDialog.BUTTON_FIRST:
-								doLevelSelect();
-								mCompleteDialog = null;
-								break;
-							case LevelCompleteDialog.BUTTON_SECOND:
-								mGameMenu.doMenu(GameMenu.GAME_MENU_MAIN);
-								mCompleteDialog = null;
-								break;
-							}
-							mCompleteDialog = null;
-							levelCompleteDialogDismissed = true;
-						}
-					});
+				if (levelComplete && !levelCompleteDialogDismissed && !levelCompleteDialogVisible && mGameDialog == null && mGameMenu.getGameMenuId() == GameMenu.GAME_MENU_NONE) {
+					boolean gotHighScore = false;
+					long bestTime = currentLevel.getHighScore(getContext());
+					if (bestTime < 0 || levelElapsed < bestTime) {
+						PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putLong("highscore." + currentLevel.getId(), levelElapsed).commit();
+						gotHighScore = true;
+					}
+					mListener.onLevelComplete(levelElapsed, gotHighScore);
+					levelCompleteDialogVisible = true;
 				}
 
 				// Calculate time elapsed, but only if we are playing!
@@ -172,7 +161,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	public void back() {
 		// Back key goes back through the menus and closes the game when in the
 		// main menu
-		if (mGameDialog == null && mCompleteDialog == null) {
+		if (mGameDialog == null) {
 			switch (mGameMenu.getGameMenuId()) {
 			case GameMenu.GAME_MENU_NONE:
 				// Playing game -> press back -> Main Menu
@@ -214,27 +203,22 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 			}
 		}
 	}
+	
+	public void levelCompleteDialogDismissed(int which) {
+		levelCompleteDialogDismissed = true;
+		levelCompleteDialogVisible = false;
+		switch (which) {
+		case AlertDialog.BUTTON_POSITIVE:
+			doLevelSelect();
+			break;
+		case AlertDialog.BUTTON_NEGATIVE:
+			mGameMenu.doMenu(GameMenu.GAME_MENU_MAIN);
+			break;
+		}
+	}
 
 	private void doLevelSelect() {
 		mListener.onLevelSelect();
-	}
-
-	public void loadLevelAsync(InputSource is) {
-		mListener.setLoadingAnimationVisible(true);
-		LevelFactory.AsyncLevelLoader loader = new LevelFactory.AsyncLevelLoader(is, new LevelFactory.AsyncLevelLoader.AsyncLoaderListener() {
-
-			@Override
-			public void onError(String message, Exception e) {
-				mListener.onError(message, e);
-			}
-
-			@Override
-			public void onLevelLoaded(LaserLightPuzzleLevel level) {
-				mListener.setLoadingAnimationVisible(false);
-				loadLevel(level);
-			}
-		});
-		loader.execute();
 	}
 
 	public void loadLevel(LaserLightPuzzleLevel level) {
@@ -242,6 +226,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 		levelComplete = false;
 		levelCompleteDialogDismissed = false;
 		levelElapsed = 0;
+		selectedIndex = -1;
 		mGameMenu.doMenu(GameMenu.GAME_MENU_NONE);
 		lastCheckedTime = System.currentTimeMillis();
 	}
@@ -252,11 +237,9 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 		float eY = event.getY();
 		if (mGameDialog != null) {
 			mGameDialog.handleTouchEvent(event);
-		} else if (mCompleteDialog != null) {
-			mCompleteDialog.handleTouchEvent(event);
 		} else if (mGameMenu.getGameMenuId() != GameMenu.GAME_MENU_NONE) {
 			mGameMenu.handleTouchEvent(event);
-		} else if (currentLevel != null) {
+		} else if (currentLevel != null && (!levelComplete || levelCompleteDialogDismissed)) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (selectedIndex > -1) {
@@ -325,7 +308,6 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 
 		boolean menuVisible = mGameMenu != null && mGameMenu.getGameMenuId() != GameMenu.GAME_MENU_NONE;
 		boolean gameDialogVisible = mGameDialog != null;
-		boolean completeDialogVisible = mCompleteDialog != null;
 
 		// If a level is loaded
 		if (currentLevel != null) {
@@ -378,7 +360,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 				levelComplete = true;
 			}
 
-			if (!menuVisible && !gameDialogVisible && !completeDialogVisible) {
+			if (!menuVisible && !gameDialogVisible) {
 
 				// Draw selected halo
 				if (selectedIndex > -1) {
@@ -417,8 +399,6 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 
 		if (gameDialogVisible) {
 			mGameDialog.draw(c);
-		} else if (completeDialogVisible) {
-			mCompleteDialog.draw(c);
 		}
 	}
 
@@ -582,6 +562,7 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 	private LaserLightPuzzleLevel currentLevel;
 	private boolean levelComplete = false;
 	private boolean levelCompleteDialogDismissed = false;
+	private boolean levelCompleteDialogVisible = false;
 
 	private long levelElapsed = 0;
 	private long lastCheckedTime = 0;
@@ -593,7 +574,6 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 
 	private GameMenu mGameMenu;
 	private GameDialog mGameDialog;
-	private LevelCompleteDialog mCompleteDialog;
 
 	private int mDragState;
 	private float prevX;
@@ -623,6 +603,8 @@ public class LaserLightPuzzleView extends View implements View.OnTouchListener {
 		public void setLoadingAnimationVisible(boolean show);
 
 		public void onLevelSelect();
+		
+		public void onLevelComplete(long time, boolean gotHighScore);
 		
 		public void onAbout();
 

@@ -2,6 +2,9 @@ package com.schneenet.android.lasers.levels;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.preference.PreferenceManager;
+
 import com.schneenet.android.lasers.obj.GameObjectRenderable;
 
 public class LaserLightPuzzleLevel implements Cloneable {
@@ -19,6 +22,10 @@ public class LaserLightPuzzleLevel implements Cloneable {
 		return obj;
 	}
 	
+	public String getId() {
+		return mId;
+	}
+	
 	public String getName() {
 		return mName;
 	}
@@ -31,8 +38,13 @@ public class LaserLightPuzzleLevel implements Cloneable {
 		return mDifficulty;
 	}
 	
+	public long getHighScore(Context ctxt) {
+		return PreferenceManager.getDefaultSharedPreferences(ctxt).getLong("highscore." + mId, -1);
+	}
+	
 	public LaserLightPuzzleLevel clone() {
 		LaserLightPuzzleLevel clone = new LaserLightPuzzleLevel();
+		clone.mId = this.mId;
 		clone.mName = this.mName;
 		clone.mDifficulty = this.mDifficulty;
 		clone.mAuthor = this.mAuthor;
@@ -43,6 +55,7 @@ public class LaserLightPuzzleLevel implements Cloneable {
 		return clone;
 	}
 	
+	String mId;
 	String mName;
 	String mAuthor;
 	int mDifficulty;

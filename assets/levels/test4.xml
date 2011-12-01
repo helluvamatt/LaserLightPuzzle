@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level>
+	<name>Test4</name>
+	<difficulty>4</difficulty>
+	<author>Paul Ferguson</author>
+	<data>
+		<wall
+			x1="0.2"
+			y1="0.2"
+			x2="0.0"
+			y2="0.4" />
+		<wall
+			x1="0.2"
+			y1="0.4"
+			x2="0.6"
+			y2="0.0" />
+		<wall
+			x1="0.6"
+			y1="0.2"
+			x2="0.0"
+			y2="0.8" />
+		<wall
+			x1="1.0"
+			y1="0.0"
+			x2="0.2"
+			y2="0.8" />
+		<wall
+			x1="0.8"
+			y1="0.4"
+			x2="0.2"
+			y2="1.0" />
+		<wall
+			x1="1.0"
+			y1="0.4"
+			x2="0.6"
+			y2="0.8" />
+		<wall
+			x1="0.8"
+			y1="0.8"
+			x2="0.6"
+			y2="1.0" />
+		<mirror
+			x="0.3"
+			y="0.1"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.1"
+			y="0.5"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.7"
+			y="0.1"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.1"
+			y="0.9"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.9"
+			y="0.3"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.5"
+			y="0.9"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<mirror
+			x="0.9"
+			y="0.7"
+			rot="1.0"
+			moveable="false"
+			rotatable="true"
+			size="50">
+			<requires color="#FFAAAAFF" />
+		</mirror>
+		<target
+			x="0.9"
+			y="0.9"
+			size="15">
+			<requires color="#FFAAAAFF" />
+		</target>
+		<laser
+			x="0.1"
+			y="0.1"
+			rot="225.0"
+			moveable="false"
+			rotatable="true"
+			color="#FFAAAAFF" />
+	</data>
+</level>

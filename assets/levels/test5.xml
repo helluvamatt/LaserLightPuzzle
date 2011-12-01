@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level>
+	<name>Laser</name>
+	<difficulty>3</difficulty>
+	<author>MAtt Schneeberger</author>
+	<data>
+		<wall x1="0.25" y1="1.0" x2="0.25" y2="0.5" />
+		<wall x1="0.5" y1="0.0" x2="0.5" y2="0.5" />
+		<laser x="0.125" y="0.875" rot="0" moveable="false" rotatable="true" color="#FF00FF00" />
+		<mirror x="0.125" y="0.125" rot="0" moveable="true" rotatable="true" size="50"><requires color="#FF00FF00" /></mirror>
+		<mirror x="0.5" y="0.875" rot="0" moveable="false" rotatable="true" size="50"><requires color="#FF00FF00" /></mirror>
+		<mirror x="0.875" y="0.125" rot="0" moveable="false" rotatable="true" size="50"><requires color="#FF00FF00" /></mirror>
+		<target x="0.125" y="0.625" size="15" transparent="true"><requires color="#FF00FF00" /></target>
+		<target x="0.625" y="0.625" size="15" transparent="true"><requires color="#FF00FF00" /></target>
+		<target x="0.875" y="0.25" size="15" transparent="true"><requires color="#FF00FF00" /></target>
+		<target x="0.875" y="0.625" size="15" transparent="true"><requires color="#FF00FF00" /></target>
+		<target x="0.875" y="0.875" size="15" transparent="false"><requires color="#FF00FF00" /></target>
+	</data>
+</level>

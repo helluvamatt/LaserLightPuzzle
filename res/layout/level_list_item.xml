@@ -2,33 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingLeft="3dp"
-    android:paddingRight="3dp">
+    android:paddingRight="3dp" >
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical" >
+
         <TextView
             android:id="@+id/level_list_item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24dp"
-            android:textColor="#FF333333"
-            android:text="name" />
+            android:text="name"
+            android:textAppearance="?android:attr/textAppearanceLargeInverse" />
+
         <TextView
             android:id="@+id/level_list_item_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:textColor="#FF333333"
-            android:text="author" />
+            android:text="author"
+            android:textAppearance="?android:attr/textAppearanceMediumInverse" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/level_list_item_highscore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:text="Best Time: 0:32"
+        android:textAppearance="?android:attr/textAppearanceSmallInverse" />
+
     <ImageView
         android:id="@+id/level_list_item_difficulty_image"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/difficulty_1"
-        android:scaleType="center" />
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:src="@drawable/difficulty_1" />
+
 </LinearLayout>
